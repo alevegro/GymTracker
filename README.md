@@ -23,14 +23,13 @@ Diario di allenamento per **palestra** e **corpo libero (calisthenics)**, pensat
 - React + TypeScript + Vite, nessun server.
 - Dati in IndexedDB (tramite Dexie), salvati solo sul dispositivo.
 - Service worker (vite-plugin-pwa) per l'uso offline e l'installazione sulla schermata Home.
-- Pubblicazione gratuita su GitHub Pages tramite GitHub Actions (`.github/workflows/deploy.yml`).
+- Pubblicazione gratuita su GitHub Pages: a ogni push su `main` una GitHub Action
+  (`.github/workflows/deploy.yml`) compila la app e la pubblica sul branch `gh-pages`.
 
-## Pubblicazione (una volta sola)
+## Pubblicazione
 
-1. Su GitHub: **Settings → General → Danger Zone → Change visibility → Public**
-   (GitHub Pages è gratuito solo per i repository pubblici; i tuoi dati non finiscono nel repo).
-2. **Settings → Pages → Build and deployment → Source: GitHub Actions**.
-3. Ogni push su `main` pubblica la app su `https://<utente>.github.io/GymTracker/`.
+La app è online su https://alevegro.github.io/GymTracker/ e si aggiorna da sola a ogni push su `main`.
+Il branch `gh-pages` è generato automaticamente: non va modificato a mano.
 
 ## Installazione su iPhone
 
