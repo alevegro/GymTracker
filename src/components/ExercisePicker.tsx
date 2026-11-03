@@ -20,6 +20,7 @@ export function ExercisePicker({ lookup, title = 'Scegli esercizio', onPick, onC
   const [kind, setKind] = useState<Kind | 'all'>('all')
   const [muscle, setMuscle] = useState<Muscle | null>(null)
   const [creating, setCreating] = useState(false)
+  const [editing, setEditing] = useState<Exercise | null>(null)
 
   const recentIds = useLiveQuery(async () => {
     const last = await db.logs.orderBy('createdAt').reverse().limit(150).toArray()
@@ -44,6 +45,17 @@ export function ExercisePicker({ lookup, title = 'Scegli esercizio', onPick, onC
   }, [filtered])
 
   const showRecents = !q && kind === 'all' && !muscle && recentIds.length > 0
+
+  if (editing) {
+    return (
+      <ExerciseForm
+        initial={editing}
+        onClose={() => setEditing(null)}
+        onSaved={() => setEditing(null)}
+        onDeleted={() => setEditing(null)}
+      />
+    )
+  }
 
   if (creating) {
     return <ExerciseForm initialName={q} onClose={() => setCreating(false)} onSaved={onPick} />
@@ -92,7 +104,7 @@ export function ExercisePicker({ lookup, title = 'Scegli esercizio', onPick, onC
           <div className="section-title">Usati di recente</div>
           <div className="list">
             {recentIds.map((id) => (
-              <ExerciseRow key={id} ex={lookup.get(id)} onPick={onPick} />
+              <ExerciseRow key={id} ex={lookup.get(id)} onPick={onPick} onEdit={setEditing} />
             ))}
           </div>
         </>
@@ -103,7 +115,7 @@ export function ExercisePicker({ lookup, title = 'Scegli esercizio', onPick, onC
           <div className="section-title">{m}</div>
           <div className="list">
             {list.map((e) => (
-              <ExerciseRow key={e.id} ex={e} onPick={onPick} />
+              <ExerciseRow key={e.id} ex={e} onPick={onPick} onEdit={setEditing} />
             ))}
           </div>
         </div>
@@ -122,18 +134,33 @@ export function ExercisePicker({ lookup, title = 'Scegli esercizio', onPick, onC
   )
 }
 
-function ExerciseRow({ ex, onPick }: { ex: Exercise; onPick: (e: Exercise) => void }) {
+function ExerciseRow({
+  ex,
+  onPick,
+  onEdit,
+}: {
+  ex: Exercise
+  onPick: (e: Exercise) => void
+  onEdit: (e: Exercise) => void
+}) {
   return (
-    <button className="list-item" onClick={() => onPick(ex)}>
-      <div className="main">
-        <div className="name">{ex.name}</div>
-        <div className="sub">
-          {ex.equipment}
-          {ex.measure === 'time' && ' · a tempo'}
-          {ex.custom && ' · personalizzato'}
+    <div className="list-item" style={{ padding: 0, gap: 0 }}>
+      <button className="list-item" style={{ flex: 1, minWidth: 0 }} onClick={() => onPick(ex)}>
+        <div className="main">
+          <div className="name">{ex.name}</div>
+          <div className="sub">
+            {ex.equipment}
+            {ex.measure === 'time' && ' · a tempo'}
+            {ex.custom && ' · personalizzato'}
+          </div>
         </div>
-      </div>
-      <Icon name="plus" className="chev" />
-    </button>
+        {!ex.custom && <Icon name="plus" className="chev" />}
+      </button>
+      {ex.custom && (
+        <button className="icon-btn" style={{ marginRight: 6 }} aria-label={`Modifica ${ex.name}`} onClick={() => onEdit(ex)}>
+          <Icon name="edit" />
+        </button>
+      )}
+    </div>
   )
 }

@@ -949,3 +949,110 @@ button.list-item:active {
   animation: fade 0.2s ease-out;
   max-width: calc(100vw - 32px);
 }
+
+/* ---------- Timer di recupero ---------- */
+
+.rest-bar {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--safe-b) + 80px);
+  z-index: 70;
+  width: min(calc(100vw - 24px), 560px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 8px 8px 16px;
+  border-radius: 18px;
+  background: var(--text);
+  color: var(--bg);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+  overflow: hidden;
+  animation: fade 0.2s ease-out;
+}
+
+.rest-progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--accent);
+  transition: width 0.25s linear;
+}
+
+.rest-label {
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.rest-label .small {
+  opacity: 0.7;
+  font-weight: 600;
+}
+
+.rest-label b {
+  font-size: 26px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.rest-btn {
+  min-width: 52px;
+  height: 44px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--bg) 16%, transparent);
+  color: var(--bg);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rest-btn.icon {
+  min-width: 44px;
+}
+
+.rest-btn svg,
+.rest-bar.done svg {
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+
+.rest-bar.done {
+  background: var(--good);
+  color: #fff;
+  min-height: 60px;
+  font-size: 16px;
+  text-align: left;
+}
+
+.timer-on .screen {
+  padding-bottom: calc(var(--tabbar-h) + var(--safe-b) + 100px);
+}
+
+.timer-on .sheet-body {
+  padding-bottom: calc(var(--safe-b) + 100px);
+}
+
+.rest-picker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rest-picker .segmented {
+  flex: 1;
+}
+
+.rest-picker .segmented button {
+  padding: 0 2px;
+}
+
+.timer-on .toast {
+  bottom: calc(var(--tabbar-h) + var(--safe-b) + 96px);
+}

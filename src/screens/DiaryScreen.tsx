@@ -157,7 +157,7 @@ export function DiaryScreen({ lookup, date, setDate, goTo }: Props) {
           onPick={async (day) => {
             setFromPlan(false)
             const n = await startPlanDay(day, date)
-            toast(n ? `${n} esercizi aggiunti: tocca per compilarli` : 'Questo giorno della scheda è vuoto')
+            toast(n ? `${n === 1 ? '1 esercizio aggiunto' : `${n} esercizi aggiunti`}: tocca per compilarli` : 'Questo giorno della scheda è vuoto')
           }}
         />
       )}

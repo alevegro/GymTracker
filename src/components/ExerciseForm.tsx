@@ -1,27 +1,32 @@
 import { useState } from 'react'
 import { Sheet } from './Sheet'
+import { Icon } from './Icon'
 import { db } from '../db'
 import { slugify } from '../exercises'
 import { MUSCLES, type Exercise, type Kind, type Measure, type Muscle } from '../types'
 
 interface Props {
+  /** Esercizio personalizzato da modificare; se assente se ne crea uno nuovo. */
+  initial?: Exercise
   initialName?: string
   onClose: () => void
   onSaved: (ex: Exercise) => void
+  onDeleted?: () => void
 }
 
-export function ExerciseForm({ initialName = '', onClose, onSaved }: Props) {
-  const [name, setName] = useState(initialName)
-  const [muscle, setMuscle] = useState<Muscle>('Petto')
-  const [kind, setKind] = useState<Kind>('gym')
-  const [measure, setMeasure] = useState<Measure>('reps')
-  const [equipment, setEquipment] = useState('')
+export function ExerciseForm({ initial, initialName = '', onClose, onSaved, onDeleted }: Props) {
+  const [name, setName] = useState(initial?.name ?? initialName)
+  const [muscle, setMuscle] = useState<Muscle>(initial?.muscle ?? 'Petto')
+  const [kind, setKind] = useState<Kind>(initial?.kind ?? 'gym')
+  const [measure, setMeasure] = useState<Measure>(initial?.measure ?? 'reps')
+  const [equipment, setEquipment] = useState(initial?.equipment ?? '')
 
   async function save() {
     const n = name.trim()
     if (!n) return
     const ex: Exercise = {
-      id: `c-${slugify(n)}-${Date.now().toString(36)}`,
+      // In modifica l'ID resta lo stesso: lo storico e le schede restano collegati.
+      id: initial?.id ?? `c-${slugify(n)}-${Date.now().toString(36)}`,
       name: n,
       muscle,
       kind,
@@ -33,21 +38,32 @@ export function ExerciseForm({ initialName = '', onClose, onSaved }: Props) {
     onSaved(ex)
   }
 
+  async function remove() {
+    if (!initial) return
+    const used = await db.logs.where('exerciseId').equals(initial.id).count()
+    const msg = used
+      ? `«${initial.name}» è usato in ${used} allenamenti: lo storico resterà ma senza nome. Eliminarlo?`
+      : `Eliminare «${initial.name}»?`
+    if (!confirm(msg)) return
+    await db.customExercises.delete(initial.id)
+    onDeleted?.()
+  }
+
   return (
     <Sheet
-      title="Nuovo esercizio"
+      title={initial ? 'Modifica esercizio' : 'Nuovo esercizio'}
       closeLabel="Annulla"
       onClose={onClose}
       footer={
         <button className="btn primary block" disabled={!name.trim()} onClick={save}>
-          Salva esercizio
+          {initial ? 'Salva modifiche' : 'Salva esercizio'}
         </button>
       }
     >
       <div className="stack">
         <label className="field">
           <span>Nome</span>
-          <input className="input" value={name} onChange={(e) => setName(e.target.value)} autoFocus />
+          <input className="input" value={name} onChange={(e) => setName(e.target.value)} autoFocus={!initial} />
         </label>
         <div className="field">
           <span>Tipo</span>
@@ -88,6 +104,17 @@ export function ExerciseForm({ initialName = '', onClose, onSaved }: Props) {
             onChange={(e) => setEquipment(e.target.value)}
           />
         </label>
+        {initial && (
+          <>
+            <div className="hint">
+              Le modifiche valgono anche per lo storico e le schede che usano già questo esercizio. Gli allenamenti già
+              registrati mantengono la misura (ripetizioni o tempo) con cui li hai inseriti.
+            </div>
+            <button className="btn danger block" onClick={remove}>
+              <Icon name="trash" /> Elimina esercizio
+            </button>
+          </>
+        )}
       </div>
     </Sheet>
   )

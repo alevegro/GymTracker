@@ -44,6 +44,8 @@ export interface LogEntry {
   measure: Measure
   sets: SetEntry[]
   note?: string
+  /** Recupero previsto dalla scheda, in secondi. */
+  rest?: number
   /** Creato dalla scheda e non ancora confermato: escluso dai progressi. */
   pending?: boolean
   createdAt: number

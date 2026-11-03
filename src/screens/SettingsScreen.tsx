@@ -6,6 +6,7 @@ import { db, exportBackup, importBackup, requestPersistence } from '../db'
 import { BUILTIN_EXERCISES } from '../exercises'
 import { toast } from '../toast'
 import { todayISO } from '../utils'
+import type { Exercise } from '../types'
 
 const BACKUP_KEY = 'gt-last-backup'
 
@@ -32,6 +33,7 @@ export function SettingsScreen() {
   const counts = useLiveQuery(async () => ({ logs: await db.logs.count(), plans: await db.plans.count() }), [])
   const [persisted, setPersisted] = useState<boolean | null>(null)
   const [creating, setCreating] = useState(false)
+  const [editing, setEditing] = useState<Exercise | null>(null)
   const [lastBackup, setLastBackup] = useState(daysSinceBackup())
   const fileRef = useRef<HTMLInputElement>(null)
 
@@ -88,14 +90,6 @@ export function SettingsScreen() {
     }
   }
 
-  async function deleteCustom(id: string, name: string) {
-    const used = await db.logs.where('exerciseId').equals(id).count()
-    const msg = used
-      ? `«${name}» è usato in ${used} allenamenti: lo storico resterà ma senza nome. Eliminarlo?`
-      : `Eliminare «${name}»?`
-    if (confirm(msg)) await db.customExercises.delete(id)
-  }
-
   async function wipe() {
     if (!confirm('Cancellare TUTTI i dati (allenamenti, schede, esercizi personalizzati)?')) return
     if (!confirm('Sei sicuro? Operazione irreversibile. Hai fatto un backup?')) return
@@ -148,17 +142,15 @@ export function SettingsScreen() {
       <div className="section-title">I miei esercizi</div>
       <div className="list">
         {custom?.map((c) => (
-          <div key={c.id} className="list-item">
+          <button key={c.id} className="list-item" onClick={() => setEditing(c)}>
             <div className="main">
               <div className="name">{c.name}</div>
               <div className="sub">
                 {c.muscle} · {c.kind === 'gym' ? 'Palestra' : 'Corpo libero'} · {c.measure === 'time' ? 'a tempo' : 'ripetizioni'}
               </div>
             </div>
-            <button className="icon-btn" aria-label={`Elimina ${c.name}`} onClick={() => deleteCustom(c.id, c.name)}>
-              <Icon name="trash" />
-            </button>
-          </div>
+            <Icon name="edit" className="chev" />
+          </button>
         ))}
         <button className="list-item" onClick={() => setCreating(true)}>
           <div className="main" style={{ color: 'var(--accent)', fontWeight: 600 }}>
@@ -167,7 +159,8 @@ export function SettingsScreen() {
         </button>
       </div>
       <div className="small muted" style={{ margin: '8px 4px' }}>
-        La libreria include {BUILTIN_EXERCISES.length} esercizi di palestra e corpo libero.
+        Tocca un tuo esercizio per modificarlo. La libreria include {BUILTIN_EXERCISES.length} esercizi di palestra e
+        corpo libero.
       </div>
 
       {!standalone && (
@@ -207,6 +200,8 @@ export function SettingsScreen() {
 
       <div className="small center" style={{ color: 'var(--text-3)', marginTop: 24 }}>
         GymTracker · gratuito, offline, i tuoi dati restano tuoi
+        <br />
+        Versione del {__APP_BUILD__}
       </div>
 
       {creating && (
@@ -215,6 +210,20 @@ export function SettingsScreen() {
           onSaved={() => {
             setCreating(false)
             toast('Esercizio aggiunto alla libreria')
+          }}
+        />
+      )}
+      {editing && (
+        <ExerciseForm
+          initial={editing}
+          onClose={() => setEditing(null)}
+          onSaved={() => {
+            setEditing(null)
+            toast('Esercizio aggiornato')
+          }}
+          onDeleted={() => {
+            setEditing(null)
+            toast('Esercizio eliminato')
           }}
         />
       )}

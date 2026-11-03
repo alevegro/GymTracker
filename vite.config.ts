@@ -3,8 +3,16 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 // Percorsi relativi: la app funziona sia su GitHub Pages (/GymTracker/) sia in locale.
+// Data della build, mostrata in «Altro» per verificare di avere l'ultima versione.
+const BUILD = new Intl.DateTimeFormat('it-IT', {
+  dateStyle: 'short',
+  timeStyle: 'short',
+  timeZone: 'Europe/Rome',
+}).format(new Date())
+
 export default defineConfig({
   base: './',
+  define: { __APP_BUILD__: JSON.stringify(BUILD) },
   plugins: [
     react(),
     VitePWA({

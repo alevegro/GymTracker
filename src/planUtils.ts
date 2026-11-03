@@ -39,6 +39,7 @@ export async function startPlanDay(day: PlanDay, date: string): Promise<number> 
       measure: pe.measure,
       sets: Array.from({ length: Math.max(1, pe.sets) }, () => ({ ...set })),
       note: pe.note,
+      rest: pe.rest,
       pending: true,
       createdAt: now + i,
     })

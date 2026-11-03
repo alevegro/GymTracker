@@ -228,7 +228,7 @@ function PlanDetail({
     if (!day) return
     const date = todayISO()
     const n = await startPlanDay(day, date)
-    toast(`${day.name}: ${n} esercizi aggiunti a oggi`)
+    toast(`${day.name}: ${n === 1 ? '1 esercizio aggiunto' : `${n} esercizi aggiunti`} a oggi`)
     onStarted(date)
   }
 

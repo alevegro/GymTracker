@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Icon } from './components/Icon'
+import { RestTimerBar } from './components/RestTimerBar'
 import { useExercises } from './hooks'
 import { requestPersistence } from './db'
 import { DiaryScreen } from './screens/DiaryScreen'
@@ -82,6 +83,7 @@ export default function App() {
           </button>
         ))}
       </nav>
+      <RestTimerBar />
       {toastMsg && <div className="toast">{toastMsg}</div>}
     </>
   )

@@ -8,6 +8,9 @@ import type { ExerciseLookup } from '../hooks'
 import type { LogEntry, Measure, SetEntry } from '../types'
 import { entryStats, fmtNum, formatDateShort, formatDuration, parseNum, summarizeSets } from '../utils'
 import { toast } from '../toast'
+import { preferredRest, savePreferredRest, startRest } from '../restTimer'
+
+const REST_OPTIONS = [30, 60, 90, 120, 180]
 
 interface Row {
   reps: string
@@ -40,6 +43,7 @@ export function LogEditor({ lookup, entry, onClose }: Props) {
   const [measure, setMeasure] = useState<Measure>(entry.measure)
   const [date, setDate] = useState(entry.date)
   const [note, setNote] = useState(entry.note ?? '')
+  const [rest, setRest] = useState(() => entry.rest ?? preferredRest(entry.exerciseId) ?? 90)
   const [rows, setRows] = useState<Row[]>(() =>
     entry.pending || isNew ? (entry.sets.length ? entry.sets : [{ weight: 0 }, { weight: 0 }, { weight: 0 }]).map(emptyRow) : entry.sets.map(toRow),
   )
@@ -140,6 +144,7 @@ export function LogEditor({ lookup, entry, onClose }: Props) {
       measure,
       sets: resolved,
       note: note.trim() || undefined,
+      rest: entry.rest,
       createdAt: entry.createdAt || Date.now(),
     }
     if (isNew) await db.logs.add(data)
@@ -292,6 +297,32 @@ export function LogEditor({ lookup, entry, onClose }: Props) {
         <button className="btn block" onClick={addSet}>
           <Icon name="plus" /> Aggiungi serie
         </button>
+
+        <div className="card stack">
+          <div className="row">
+            <Icon name="timer" className="chev" />
+            <b style={{ flex: 1 }}>Recupero</b>
+            {entry.rest != null && <span className="small muted">da scheda: {formatDuration(entry.rest)}</span>}
+          </div>
+          <div className="rest-picker">
+            <div className="segmented">
+              {(REST_OPTIONS.includes(rest) ? REST_OPTIONS : [...REST_OPTIONS, rest].sort((a, b) => a - b)).map((r) => (
+                <button key={r} className={rest === r ? 'active' : ''} onClick={() => setRest(r)}>
+                  {formatDuration(r)}
+                </button>
+              ))}
+            </div>
+          </div>
+          <button
+            className="btn primary block"
+            onClick={() => {
+              savePreferredRest(entry.exerciseId, rest)
+              startRest(rest)
+            }}
+          >
+            <Icon name="play" /> Avvia recupero {formatDuration(rest)}
+          </button>
+        </div>
 
         {placeholders.length > 0 && (
           <div className="hint">

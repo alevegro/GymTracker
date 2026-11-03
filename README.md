@@ -9,8 +9,11 @@ Diario di allenamento per **palestra** e **corpo libero (calisthenics)**, pensat
   - Ogni serie ha ripetizioni **oppure** tempo (min:sec, es. plank) e carico in kg (0 = corpo libero).
   - I valori dell'ultima volta compaiono in grigio: se lasci un campo vuoto viene usato quello.
   - Avviso automatico quando batti un record.
+  - **Cronometro di recupero**: scegli la durata (o usa quella della scheda) e avvialo. Il conto alla rovescia
+    resta visibile in ogni schermata, si regola di ±15 secondi e suona alla fine.
 - **Libreria di oltre 200 esercizi** divisi per muscolo e tipo (palestra / corpo libero, comprese le skill
-  come front lever, planche e muscle-up), con ricerca e la possibilità di crearne di propri.
+  come front lever, planche e muscle-up), con ricerca e la possibilità di crearne di propri,
+  modificabili in seguito (nome, muscolo, tipo, misura, attrezzo) senza perdere lo storico.
 - **Schede**: più schede divise in giorni (A/B/C…), con serie, ripetizioni (anche a range), tempo, carico,
   recupero e note. Le consulti in palestra con l'ultima prestazione accanto a ogni esercizio, e con
   «Allenati oggi» le carichi nel diario già compilate.
