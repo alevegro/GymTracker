@@ -326,6 +326,10 @@ export const BUILTIN_EXERCISES: Exercise[] = Object.entries(LIBRARY).flatMap(([m
   ...(groups.cal ?? []).map((r) => toExercise(r, muscle as Muscle, C)),
 ])
 
+export const BUILTIN_IDS = new Set(BUILTIN_EXERCISES.map((e) => e.id))
+
+export const builtinById = (id: string) => BUILTIN_EXERCISES.find((e) => e.id === id)
+
 function toExercise([name, equipment, measure = 'reps']: Row, muscle: Muscle, kind: Kind): Exercise {
   return { id: slugify(name), name, muscle, kind, measure, equipment }
 }

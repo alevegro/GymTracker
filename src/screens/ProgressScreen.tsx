@@ -3,6 +3,8 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { Icon } from '../components/Icon'
 import { LineChart, type Point } from '../components/LineChart'
 import { LogEditor } from '../components/LogEditor'
+import { ExerciseForm } from '../components/ExerciseForm'
+import { toast } from '../toast'
 import { db } from '../db'
 import type { ExerciseLookup } from '../hooks'
 import type { LogEntry, Measure } from '../types'
@@ -178,6 +180,7 @@ function ExerciseProgress({
   const ex = lookup.get(exerciseId)
   const [range, setRange] = useState<number>(0)
   const [editing, setEditing] = useState<LogEntry | null>(null)
+  const [editingExercise, setEditingExercise] = useState(false)
 
   // Misura prevalente: il grafico confronta solo sessioni omogenee.
   const measure: Measure = useMemo(() => {
@@ -241,6 +244,9 @@ function ExerciseProgress({
       <div className="title-row" style={{ margin: '0 -4px' }}>
         <button className="link row" style={{ gap: 2 }} onClick={onBack}>
           <Icon name="chevronLeft" className="chev" /> Progressi
+        </button>
+        <button className="link" onClick={() => setEditingExercise(true)}>
+          Modifica
         </button>
       </div>
       <h1 className="large-title" style={{ fontSize: 28 }}>
@@ -326,6 +332,22 @@ function ExerciseProgress({
       </div>
 
       {editing && <LogEditor lookup={lookup} entry={editing} onClose={() => setEditing(null)} />}
+      {editingExercise && (
+        <ExerciseForm
+          initial={ex}
+          lookup={lookup}
+          onClose={() => setEditingExercise(false)}
+          onSaved={() => {
+            setEditingExercise(false)
+            toast('Esercizio aggiornato')
+          }}
+          onDeleted={() => {
+            setEditingExercise(false)
+            onBack()
+          }}
+          onTransferred={onBack}
+        />
+      )}
     </div>
   )
 }

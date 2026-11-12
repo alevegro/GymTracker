@@ -26,7 +26,10 @@ export interface Exercise {
   kind: Kind
   measure: Measure
   equipment: string
+  /** Creato dall'utente. */
   custom?: boolean
+  /** Esercizio standard della libreria modificato dall'utente (stesso ID dell'originale). */
+  edited?: boolean
 }
 
 /** Una serie: ripetizioni oppure tempo (in secondi), più il carico in kg (0 = corpo libero). */

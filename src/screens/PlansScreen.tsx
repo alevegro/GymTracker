@@ -3,9 +3,10 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { Sheet } from '../components/Sheet'
 import { Icon } from '../components/Icon'
 import { ExercisePicker } from '../components/ExercisePicker'
+import { ExerciseForm } from '../components/ExerciseForm'
 import { db } from '../db'
 import type { ExerciseLookup } from '../hooks'
-import type { LogEntry, Measure, Plan, PlanDay, PlanExercise } from '../types'
+import type { Exercise, LogEntry, Measure, Plan, PlanDay, PlanExercise } from '../types'
 import { formatDateShort, formatDuration, parseNum, summarizeSets, todayISO, uid, fmtNum } from '../utils'
 import { formatTarget, setActivePlan, sortPlans, startPlanDay } from '../planUtils'
 import { toast } from '../toast'
@@ -162,6 +163,7 @@ function PlanDetail({
   const [dayId, setDayId] = useState(plan.days[0]?.id)
   const [picking, setPicking] = useState(false)
   const [editEx, setEditEx] = useState<{ index: number; pe: PlanExercise } | null>(null)
+  const [editExercise, setEditExercise] = useState<Exercise | null>(null)
 
   const day = plan.days.find((d) => d.id === dayId) ?? plan.days[0]
 
@@ -408,6 +410,26 @@ function PlanDetail({
             updateDay({ exercises: day.exercises.filter((_, j) => j !== editEx.index) })
             setEditEx(null)
           }}
+          onEditExercise={
+            editEx.index < 0
+              ? undefined
+              : () => {
+                  setEditEx(null)
+                  setEditExercise(lookup.get(editEx.pe.exerciseId))
+                }
+          }
+        />
+      )}
+      {editExercise && (
+        <ExerciseForm
+          initial={editExercise}
+          lookup={lookup}
+          onClose={() => setEditExercise(null)}
+          onSaved={() => {
+            setEditExercise(null)
+            toast('Esercizio aggiornato')
+          }}
+          onDeleted={() => setEditExercise(null)}
         />
       )}
     </div>
@@ -423,6 +445,7 @@ function PlanExerciseEditor({
   onClose,
   onSave,
   onDelete,
+  onEditExercise,
 }: {
   name: string
   initial: PlanExercise
@@ -430,6 +453,7 @@ function PlanExerciseEditor({
   onClose: () => void
   onSave: (pe: PlanExercise) => void
   onDelete: () => void
+  onEditExercise?: () => void
 }) {
   const [measure, setMeasure] = useState<Measure>(initial.measure)
   const [sets, setSets] = useState(String(initial.sets))
@@ -534,6 +558,11 @@ function PlanExerciseEditor({
             onChange={(e) => setNote(e.target.value)}
           />
         </label>
+        {onEditExercise && (
+          <button className="btn block" onClick={onEditExercise}>
+            <Icon name="edit" /> Modifica esercizio (nome, muscolo…)
+          </button>
+        )}
         {!isNew && (
           <button className="btn danger block" onClick={onDelete}>
             <Icon name="trash" /> Rimuovi dalla scheda

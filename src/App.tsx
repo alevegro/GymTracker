@@ -73,7 +73,7 @@ export default function App() {
         />
       )}
       {tab === 'progress' && <ProgressScreen lookup={lookup} />}
-      {tab === 'settings' && <SettingsScreen />}
+      {tab === 'settings' && <SettingsScreen lookup={lookup} />}
 
       <nav className="tabbar">
         {TABS.map((t) => (

@@ -14,6 +14,8 @@ Diario di allenamento per **palestra** e **corpo libero (calisthenics)**, pensat
 - **Libreria di oltre 200 esercizi** divisi per muscolo e tipo (palestra / corpo libero, comprese le skill
   come front lever, planche e muscle-up), con ricerca e la possibilità di crearne di propri,
   modificabili in seguito (nome, muscolo, tipo, misura, attrezzo) senza perdere lo storico.
+  Anche gli esercizi standard si possono modificare (con ripristino dell'originale), e lo storico di un
+  esercizio si può spostare su un altro, insieme alle schede che lo usano.
 - **Schede**: più schede divise in giorni (A/B/C…), con serie, ripetizioni (anche a range), tempo, carico,
   recupero e note. Le consulti in palestra con l'ultima prestazione accanto a ogni esercizio, e con
   «Allenati oggi» le carichi nel diario già compilate.

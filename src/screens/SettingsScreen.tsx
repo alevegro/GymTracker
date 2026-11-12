@@ -3,7 +3,8 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { Icon } from '../components/Icon'
 import { ExerciseForm } from '../components/ExerciseForm'
 import { db, exportBackup, importBackup, requestPersistence } from '../db'
-import { BUILTIN_EXERCISES } from '../exercises'
+import { BUILTIN_EXERCISES, builtinById } from '../exercises'
+import type { ExerciseLookup } from '../hooks'
 import { toast } from '../toast'
 import { todayISO } from '../utils'
 import type { Exercise } from '../types'
@@ -28,7 +29,7 @@ function markBackup() {
   }
 }
 
-export function SettingsScreen() {
+export function SettingsScreen({ lookup }: { lookup: ExerciseLookup }) {
   const custom = useLiveQuery(() => db.customExercises.toArray(), [])
   const counts = useLiveQuery(async () => ({ logs: await db.logs.count(), plans: await db.plans.count() }), [])
   const [persisted, setPersisted] = useState<boolean | null>(null)
@@ -146,7 +147,9 @@ export function SettingsScreen() {
             <div className="main">
               <div className="name">{c.name}</div>
               <div className="sub">
-                {c.muscle} · {c.kind === 'gym' ? 'Palestra' : 'Corpo libero'} · {c.measure === 'time' ? 'a tempo' : 'ripetizioni'}
+                {c.edited
+                  ? `Standard modificato · originale: ${builtinById(c.id)?.name ?? '?'}`
+                  : `${c.muscle} · ${c.kind === 'gym' ? 'Palestra' : 'Corpo libero'} · ${c.measure === 'time' ? 'a tempo' : 'ripetizioni'}`}
               </div>
             </div>
             <Icon name="edit" className="chev" />
@@ -159,8 +162,9 @@ export function SettingsScreen() {
         </button>
       </div>
       <div className="small muted" style={{ margin: '8px 4px' }}>
-        Tocca un tuo esercizio per modificarlo. La libreria include {BUILTIN_EXERCISES.length} esercizi di palestra e
-        corpo libero.
+        Qui trovi gli esercizi che hai creato o modificato. La libreria include {BUILTIN_EXERCISES.length} esercizi di
+        palestra e corpo libero: per modificarne uno tocca la matita accanto al nome quando lo scegli, oppure «Modifica»
+        nella sua pagina dei Progressi.
       </div>
 
       {!standalone && (
@@ -216,6 +220,7 @@ export function SettingsScreen() {
       {editing && (
         <ExerciseForm
           initial={editing}
+          lookup={lookup}
           onClose={() => setEditing(null)}
           onSaved={() => {
             setEditing(null)

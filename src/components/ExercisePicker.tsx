@@ -50,6 +50,7 @@ export function ExercisePicker({ lookup, title = 'Scegli esercizio', onPick, onC
     return (
       <ExerciseForm
         initial={editing}
+        lookup={lookup}
         onClose={() => setEditing(null)}
         onSaved={() => setEditing(null)}
         onDeleted={() => setEditing(null)}
@@ -152,15 +153,13 @@ function ExerciseRow({
             {ex.equipment}
             {ex.measure === 'time' && ' · a tempo'}
             {ex.custom && ' · personalizzato'}
+            {ex.edited && ' · modificato'}
           </div>
         </div>
-        {!ex.custom && <Icon name="plus" className="chev" />}
       </button>
-      {ex.custom && (
-        <button className="icon-btn" style={{ marginRight: 6 }} aria-label={`Modifica ${ex.name}`} onClick={() => onEdit(ex)}>
-          <Icon name="edit" />
-        </button>
-      )}
+      <button className="icon-btn" style={{ marginRight: 6 }} aria-label={`Modifica ${ex.name}`} onClick={() => onEdit(ex)}>
+        <Icon name="edit" />
+      </button>
     </div>
   )
 }
